@@ -1,0 +1,18 @@
+-- This file is best viewed when processed by rdoc.
+++
+
+= Process Pilot
+
+Ruby library to pilot interactive command line processes in real time.
+
+== Where is the documentation ?
+
+Check the website at http://processpilot.sourceforge.net
+
+== Who wrote it ?
+
+Check the AUTHORS[link:files/AUTHORS.html] file.
+
+== What is the license ?
+
+You can find out in the LICENSE[link:files/LICENSE.html] file.
