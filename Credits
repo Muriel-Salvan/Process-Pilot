@@ -1,10 +1,5 @@
 = Projects used by Process Pilot
 
-== ChildProcess
-* Jari Bakken (http://github.com/jarib)
-* http://github.com/jarib/childprocess
-* Used to internally pilot stdin in real time
-
 == Ruby
 * Yukihiro « matz » Matsumoto (http://www.rubyist.net/~matz/)
 * http://www.ruby-lang.org/

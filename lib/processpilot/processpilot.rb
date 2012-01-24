@@ -3,10 +3,35 @@
 # Licensed under the terms specified in LICENSE file. No warranty is provided.
 #++
 
-require 'childprocess'
-require 'tempfile'
+require 'open3'
+require 'timeout'
 
 module ProcessPilot
+
+  class ChildProcessInfo
+
+    # Constructor
+    #
+    # Parameters:
+    # * *iWaitThread* (_Thread_): The waiting thread, can be nil if already stopped or dead
+    def initialize(iWaitThread)
+      @WaitThread = iWaitThread
+    end
+
+    # Has the waiting process exited already ?
+    #
+    # Return:
+    # * _Boolean_: Has the waiting process exited already ?
+    def exited?
+      return ((@WaitThread == nil) or (@WaitThread.stop?))
+    end
+
+    # Stop the process' execution
+    def stop
+      @WaitThread.kill if @WaitThread
+    end
+
+  end
 
   # Pilot a process.
   # This will create a new thread for the process to be run.
@@ -23,9 +48,7 @@ module ProcessPilot
   # ** *oStdIN* (_IO_): The process' STDIN
   # ** *iStdOUT* (_IO_): The process' STDOUT
   # ** *iStdERR* (_IO_): The process' STDERR
-  # ** *iChildProcess* (_ChildProcess_): The corresponding child process. Don't use it to pilot std* IO objects.
-  # ** Return:
-  # ** _Boolean_: Do we have to wait until the process' completion ?
+  # ** *iChildProcess* (_ChildProcess_): The corresponding child process. Don't use it to pilot std* IO objects. Depending on the platforms, this might be nil.
   def self.pilot(*iArgs)
     iCmdLine = iArgs
     iOptions = (iArgs[-1].is_a?(Hash)) ? iArgs.pop : {}
@@ -43,40 +66,9 @@ module ProcessPilot
     lRealCmdLine = (iForceRubyProcessSync) ? iRubyCmdLine + [ "#{File.dirname(__FILE__)}/wrapper.rb" ] + iCmdLine : iCmdLine
 
     logDebug "[ProcessPilot] Command line: #{lRealCmdLine.inspect}" if iDebug
-    lProcess = ChildProcess.build(*lRealCmdLine)
-
-    # Indication of stdin usage
-    lProcess.duplex = true
-
-    # Specify files for stdout/stderr
-    # ! Use w+ mode to make it possible for our monitoring thread to reopen the file in r mode
-    Tempfile.open('processpilot.stdout') do |oStdOUT|
-      logDebug "[ProcessPilot] STDOUT file: #{oStdOUT.path}" if iDebug
-      lProcess.io.stdout = oStdOUT
-      Tempfile.open('processpilot.stderr') do |oStdERR|
-        logDebug "[ProcessPilot] STDERR file: #{oStdERR.path}" if iDebug
-        lProcess.io.stderr = oStdERR
-
-        # Start the process: this creates the background thread running our command
-        lProcess.start
-
-        # In our main thread: open the STDOUT/ERR files
-        lStdOUT = File.open(oStdOUT.path, 'r')
-        lStdERR = File.open(oStdERR.path, 'r')
-        lStdIN = lProcess.io.stdin
-
-        # Call client code
-        lWaitUntilCompletion = yield(lStdIN, lStdOUT, lStdERR, lProcess)
-
-        # Wait for the process termination in case it is late
-        if (lWaitUntilCompletion)
-          while (!lProcess.exited?)
-            sleep 1
-          end
-        end
-      end
+    Open3::popen3(*lRealCmdLine) do |oStdIN, iStdOUT, iStdERR, iWaitThread|
+      yield(oStdIN, iStdOUT, iStdERR, ChildProcessInfo.new(iWaitThread))
     end
-
   end
 
 end
@@ -84,114 +76,42 @@ end
 # Define some helpers that can be handy in case of process piloting from IO
 class IO
 
-  # Exception thrown when timeout has been reached
-  class TimeOutError < RuntimeError
-  end
-
-  # Implement a blocking read of a new string ending with newline.
-  # Make sure we wait for the end of a string before returning.
-  # This is done to ensure we will get the new string we are expecting.
-  # If the timeout is reached, an exception is thrown.
-  #
-  # Parameters:
-  # * *iOptions* (<em>map<Symbol,Object></em>): Optional arguments [optional = {}]:
-  # ** *:TimeOutSecs* (_Integer_): Time out in seconds (nil = no timeout) [optional = nil]
-  # ** *:PollingIntervalSecs* (_Float_): Polling interval in seconds [optional = 0.1]
-  # ** *:ChildProcess* (_ChildProcess_): Corresponding child process linked to this IO. Can be used to detect the end of IO. [optional = nil]
-  # Return:
-  # * _String_: The next string from IO (separator is $/). Can be empty if the corresponding child process has exited already.
-  def gets_blocking(iOptions = {})
-    return get_data_blocking(
-      Proc.new { |iStr| iStr[-1..-1] == $/ },
-      iOptions
-    ) do |iStr|
-      next self.gets
-    end
-  end
-
-  # Implement a blocking read of a given size.
-  # Make sure we wait for the end of a string before returning.
-  # This is done to ensure we will get the new string we are expecting.
-  # If the timeout is reached, an exception is thrown.
-  #
-  # Parameters:
-  # * *iSize* (_Integer_): Size of the data to read
-  # * *iOptions* (<em>map<Symbol,Object></em>): Optional arguments [optional = {}]:
-  # ** *:TimeOutSecs* (_Integer_): Time out in seconds (nil = no timeout) [optional = nil]
-  # ** *:PollingIntervalSecs* (_Float_): Polling interval in seconds [optional = 0.1]
-  # ** *:ChildProcess* (_ChildProcess_): Corresponding child process linked to this IO. Can be used to detect the end of IO. [optional = nil]
-  # Return:
-  # * _String_: The next string from IO (separator is $/). Can be empty if the corresponding child process has exited already.
-  def read_blocking(iSize, iOptions = {})
-    return get_data_blocking(
-      Proc.new { |iStr| iStr.size == iSize },
-      iOptions
-    ) do |iStr|
-      next self.read(iSize-iStr.size)
-    end
-  end
-
-  # Send a synchronized input to an IO.
-  # Make sure it will be flushed.
-  #
-  # Parameters:
-  # * *iStr* (_String_): The string to send
-  def write_flushed(iStr)
-    self.write iStr
-    self.flush
-  end
-
-  private
-
-  # Implement a blocking read of a data unless the data read conforms to a given validation code.
-  # Take a validation proc to know if the data was read correctly, and yields code to read effectively data.
-  # Proper implementation should have a more efficient algo.
-  # If the timeout is reached, an exception is thrown.
-  #
-  # Parameters:
-  # * *iProcValidation* (_Proc_): The validation proc:
-  # ** Parameters:
-  # ** *iData* (_String_): The data to validate
-  # ** Return:
-  # ** _Boolean_: Is the data valid ?
-  # * *iOptions* (<em>map<Symbol,Object></em>): Optional arguments [optional = {}]:
-  # ** *:TimeOutSecs* (_Integer_): Time out in seconds (nil = no timeout) [optional = nil]
-  # ** *:PollingIntervalSecs* (_Float_): Polling interval in seconds [optional = 0.1]
-  # ** *:ChildProcess* (_ChildProcess_): Corresponding child process linked to this IO. Can be used to detect the end of IO. [optional = nil]
-  # * _CodeBlock_: Code called to read data effectively:
-  # ** Parameters:
-  # ** *iStr* (_String_): The data already read
-  # ** Return:
-  # ** _String_: String of data read (can be nil if no data was read)
-  # Return:
-  # * _String_: The next string from IO (separator is $/). Can be empty if the corresponding child process has exited already.
-  def get_data_blocking(iProcValidation, iOptions = {})
-    rStr = ''
-    iPollingInterval = (iOptions[:PollingIntervalSecs] || 0.1)
-    iTimeOutSecs = iOptions[:TimeOutSecs]
-    iChildProcess = iOptions[:ChildProcess]
-
-    require 'time' if (iTimeOutSecs != nil)
-
-    # Concatenate chunks unless we have the separator.
-    # As we deal with stdin flow, it is possible to have a line without ending already written in the file and already flushed by the IO.
-    lTimeOut = (iTimeOutSecs == nil) ? nil : Time.now + iTimeOutSecs
-    while (!iProcValidation.call(rStr))
-      lNewChunk = nil
-      while (lNewChunk == nil)
-        lNewChunk = yield(rStr)
-        #$stdout.puts "===== Read #{lNewChunk.inspect}"
-        break if ((iChildProcess != nil) and (iChildProcess.exited?))
-        if (lNewChunk == nil)
-          sleep iPollingInterval
-          raise TimeOutError.new("Timeout of #{iTimeOutSecs} secs reached while waiting for data.") if ((lTimeOut != nil) and (Time.now > lTimeOut))
+  alias :gets_ORG_ProcessPilot :gets
+  # Add the possibility to gets to take an optional Hash:
+  # *:TimeOutSecs* (_Integer_): Timeout in seconds to read data. nil means no timeout (regular gets) [optional = nil].
+  def gets(*iArgs)
+    if (iArgs[-1].is_a?(Hash))
+      lOptions = iArgs[-1]
+      lTimeOutSecs = lOptions[:TimeOutSecs]
+      if (lTimeOutSecs == nil)
+        return gets_ORG_ProcessPilot(*iArgs[0..-2])
+      else
+        return Timeout::timeout(lTimeOutSecs) do
+          next gets_ORG_ProcessPilot(*iArgs[0..-2])
         end
       end
-      rStr.concat(lNewChunk) if (lNewChunk != nil)
-      break if ((iChildProcess != nil) and (iChildProcess.exited?))
+    else
+      return gets_ORG_ProcessPilot(*iArgs)
     end
+  end
 
-    return rStr
+  alias :read_ORG_ProcessPilot :read
+  # Add the possibility to gets to take an optional Hash:
+  # *:TimeOutSecs* (_Integer_): Timeout in seconds to read data. nil means no timeout (regular gets) [optional = nil].
+  def read(*iArgs)
+    if (iArgs[-1].is_a?(Hash))
+      lOptions = iArgs[-1]
+      lTimeOutSecs = lOptions[:TimeOutSecs]
+      if (lTimeOutSecs == nil)
+        return read_ORG_ProcessPilot(*iArgs[0..-2])
+      else
+        return Timeout::timeout(lTimeOutSecs) do
+          next read_ORG_ProcessPilot(*iArgs[0..-2])
+        end
+      end
+    else
+      return read_ORG_ProcessPilot(*iArgs)
+    end
   end
 
 end

@@ -210,29 +210,29 @@ module ProcessPilotTest
     # * *iStdERR* (_IO_): STDERR
     # * *iChildProcess* (_ChildProcess_): Corresponding ChildProcess
     def assert_testing_scenario(oStdIN, iStdOUT, iStdERR, iChildProcess)
-      assert_equal "STDOUT Line 1\n", iStdOUT.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
-      assert_equal 'Enter string 1 from STDOUT: ', iStdOUT.read_blocking(28, :ChildProcess => iChildProcess)
-      assert_raise IO::TimeOutError do
-        iStdERR.read_blocking(1, :TimeOutSecs => 1, :ChildProcess => iChildProcess)
+      assert_equal "STDOUT Line 1.\n", iStdOUT.gets(:TimeOutSecs => 1)
+      assert_equal 'Enter string 1 from STDOUT: ', iStdOUT.read(28)
+      assert_raise Timeout::Error do
+        iStdERR.read(1, :TimeOutSecs => 1)
       end
-      assert_raise IO::TimeOutError do
-        iStdOUT.read_blocking(1, :TimeOutSecs => 1, :ChildProcess => iChildProcess)
+      assert_raise Timeout::Error do
+        iStdOUT.read(1, :TimeOutSecs => 1)
       end
-      oStdIN.write_flushed "Test String 1\n"
-      assert_equal "STDOUT Line 2 Test String 1\n", iStdOUT.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
-      assert_equal "STDERR Line 1\n", iStdERR.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
-      assert_equal 'Enter string 2 from STDERR: ', iStdERR.read_blocking(28, :ChildProcess => iChildProcess)
-      assert_raise IO::TimeOutError do
-        iStdERR.read_blocking(1, :TimeOutSecs => 1, :ChildProcess => iChildProcess)
+      oStdIN.write "Test String 1\n"
+      assert_equal "STDOUT Line 2: Test String 1\n", iStdOUT.gets(:TimeOutSecs => 1)
+      assert_equal "STDERR Line 1.\n", iStdERR.gets(:TimeOutSecs => 1)
+      assert_equal 'Enter string 2 from STDERR: ', iStdERR.read(28)
+      assert_raise Timeout::Error do
+        iStdERR.read(1, :TimeOutSecs => 1)
       end
-      assert_raise IO::TimeOutError do
-        iStdOUT.read_blocking(1, :TimeOutSecs => 1, :ChildProcess => iChildProcess)
+      assert_raise Timeout::Error do
+        iStdOUT.read(1, :TimeOutSecs => 1)
       end
-      oStdIN.write_flushed "Test String 2\n"
-      assert_equal "STDOUT Line 3 Test String 2\n", iStdOUT.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
-      assert_equal "STDERR Line 2\n", iStdERR.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
-      assert_equal '', iStdOUT.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
-      assert_equal '', iStdERR.gets_blocking(:TimeOutSecs => 1, :ChildProcess => iChildProcess)
+      oStdIN.write "Test String 2\n"
+      assert_equal "STDOUT Line 3: Test String 2\n", iStdOUT.gets(:TimeOutSecs => 1)
+      assert_equal "STDERR Line 2.\n", iStdERR.gets(:TimeOutSecs => 1)
+      assert_equal nil, iStdOUT.gets(:TimeOutSecs => 1)
+      assert_equal nil, iStdERR.gets(:TimeOutSecs => 1)
       assert iChildProcess.exited?
     end
 

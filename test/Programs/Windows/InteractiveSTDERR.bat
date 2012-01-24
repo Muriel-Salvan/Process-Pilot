@@ -1,4 +1,4 @@
 @echo off
-echo Hello World >&2
+echo Hello World>&2
 set /p var="" %=%
-echo Hello %var% >&2
+echo Hello %var%>&2

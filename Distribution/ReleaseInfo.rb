@@ -39,8 +39,7 @@ RubyPackager::ReleaseInfo.new.
     :HasRDoc => true,
     :TestFile => 'test/run.rb',
     :GemDependencies => [
-      [ 'rUtilAnts', '>= 0.3' ],
-      [ 'childprocess', '>= 0.2.3' ]
+      [ 'rUtilAnts', '>= 0.3' ]
     ]
   ).
   sourceForge(
