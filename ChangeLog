@@ -1,5 +1,13 @@
 = Process Pilot Release History
 
+== 1.0.0.20120124 (Beta)
+
+* Removed dependency on ChildProcess: now uses Open3
+* Client code does not need to return the value to wait for the process
+* Client code now receives a ChildProcessInfo parameter in 4th position that might be nil on some platforms
+* Replaced IO::gets_blocking and IO::read_blocking with IO::gets and IO::read taking an optional :TimeOutSecs option
+* Regression: Added some dots and removed some quotes at the end of echoed lines for Windows compatibility
+
 == 0.0.1.20120118 (Beta)
 
 * Initial public release.
