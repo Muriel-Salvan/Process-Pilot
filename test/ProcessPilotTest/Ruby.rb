@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2012 Muriel Salvan (murielsalvan@users.sourceforge.net)
+# Copyright (c) 2012 Muriel Salvan (muriel@x-aeon.com)
 # Licensed under the terms specified in LICENSE file. No warranty is provided.
 #++
 
@@ -18,7 +18,7 @@ module ProcessPilotTest
     def testNormalSTDOUT
       ProcessPilot::pilot(*getNormalRubyCmdLine) do |oStdIN, iStdOUT, iStdERR, iChildProcess|
         assert_raise Timeout::Error do
-          iStdOUT.read(1, :TimeOutSecs => 1)
+          iStdOUT.read(1, :time_out_secs => 1)
         end
         iChildProcess.stop
       end

@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2012 Muriel Salvan (murielsalvan@users.sourceforge.net)
+# Copyright (c) 2012 Muriel Salvan (muriel@x-aeon.com)
 # Licensed under the terms specified in LICENSE file. No warranty is provided.
 #++
 
@@ -10,7 +10,12 @@ $stdout.sync = true
 iRBFileName = ARGV[0]
 
 # Adapt ARGV for this rb file to get its arguments correctly
-# TODO: Maybe adapt other variables ...
+# Adapt variables modified by the wrapper
+# ARGV
 ARGV.replace(ARGV[1..-1])
+# $0
+$__ProcessPilot__RealProgramName = File.expand_path(iRBFileName)
+alias $0 $__ProcessPilot__RealProgramName
 
+# Execute the normal program
 load iRBFileName

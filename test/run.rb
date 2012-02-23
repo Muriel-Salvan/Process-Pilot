@@ -1,18 +1,17 @@
 #--
-# Copyright (c) 2012 Muriel Salvan (murielsalvan@users.sourceforge.net)
+# Copyright (c) 2012 Muriel Salvan (muriel@x-aeon.com)
 # Licensed under the terms specified in LICENSE file. No warranty is provided.
 #++
 
-$ProcessPilotTest_Debug = true
+$ProcessPilotTest_Debug = false
 
 require 'test/unit'
 require 'rUtilAnts/Logging'
-RUtilAnts::Logging::initializeLogging('', '')
-activateLogDebug($ProcessPilotTest_Debug)
+RUtilAnts::Logging::install_logger_on_object(:debug_mode => $ProcessPilotTest_Debug)
 require 'rUtilAnts/Misc'
-RUtilAnts::Misc::initializeMisc
+RUtilAnts::Misc::install_misc_on_object
 require 'rUtilAnts/Platform'
-RUtilAnts::Platform::initializePlatform
+RUtilAnts::Platform::install_platform_on_object
 
 $ProcessPilotTest_RootPath = File.expand_path("#{File.dirname(__FILE__)}/..")
 

@@ -1,5 +1,5 @@
 #--
-# Copyright (c) 2012 Muriel Salvan (murielsalvan@users.sourceforge.net)
+# Copyright (c) 2012 Muriel Salvan (muriel@x-aeon.com)
 # Licensed under the terms specified in LICENSE file. No warranty is provided.
 #++
 
@@ -9,12 +9,12 @@ module ProcessPilotTest
 
     # Get the OS dependant command line for testing non interactive processes
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getNotInteractiveCmdLine
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/NotInteractive.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -24,19 +24,19 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/NotInteractive.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the OS dependant command line for testing non interactive processes on STDERR
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getNotInteractiveCmdLineSTDERR
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/NotInteractiveSTDERR.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -46,19 +46,19 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/NotInteractiveSTDERR.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the OS dependant command line for testing interactive processes
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getInteractiveCmdLine
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/Interactive.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -68,19 +68,19 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/Interactive.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the OS dependant command line for testing interactive processes on STDERR
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getInteractiveCmdLineSTDERR
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/InteractiveSTDERR.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -90,19 +90,19 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/InteractiveSTDERR.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the OS dependant command line for testing interactive processes with a prompt
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getInteractivePromptCmdLine
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/InteractivePrompt.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -112,19 +112,19 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/InteractivePrompt.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the OS dependant command line for testing interactive processes with a prompt on STDERR
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getInteractivePromptCmdLineSTDERR
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/InteractivePromptSTDERR.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -134,19 +134,19 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/InteractivePromptSTDERR.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the OS dependant command line for testing interactive processes with several prompts
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getInteractiveSeveralPrompts
       rCmdLine = nil
 
-      case $rUtilAnts_Platform_Info.os
+      case os
       when RUtilAnts::Platform::OS_WINDOWS
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Windows/InteractiveSeveralPrompts.bat"]
       when RUtilAnts::Platform::OS_LINUX
@@ -156,46 +156,46 @@ module ProcessPilotTest
       else
         rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Bash/InteractiveSeveralPrompts.sh"]
       end
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the command line for testing synced Ruby programs
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getSyncedRubyCmdLine
       rCmdLine = ['ruby', "#{$ProcessPilotTest_RootPath}/test/Programs/Ruby/SyncedSTDOUT.rb"]
 
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the command line for testing normal Ruby programs
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getNormalRubyCmdLine
       rCmdLine = ['ruby', "#{$ProcessPilotTest_RootPath}/test/Programs/Ruby/NormalSTDOUT.rb"]
 
-      rCmdLine << { :Debug => true } if ($ProcessPilotTest_Debug)
+      rCmdLine << { :debug => true } if ($ProcessPilotTest_Debug)
 
       return rCmdLine
     end
 
     # Get the command line for testing normal Ruby programs and forcing them to sync
     #
-    # Return:
+    # Return::
     # * <em>list<String></em>: Command line
     def getNormalRubyWithSyncCmdLine
       rCmdLine = ["#{$ProcessPilotTest_RootPath}/test/Programs/Ruby/NormalSTDOUT.rb"]
 
       lOptions = {
-        :ForceRubyProcessSync => true
+        :force_ruby_process_sync => true
       }
-      lOptions[:Debug] = true if ($ProcessPilotTest_Debug)
+      lOptions[:debug] = true if ($ProcessPilotTest_Debug)
       rCmdLine << lOptions
 
       return rCmdLine
@@ -204,35 +204,35 @@ module ProcessPilotTest
     # Assert a common given scenario.
     # This has been put in such a method as the same scenario is used in different scripts.
     #
-    # Parameters:
+    # Parameters::
     # * *oStdIN* (_IO_): STDIN
     # * *iStdOUT* (_IO_): STDOUT
     # * *iStdERR* (_IO_): STDERR
     # * *iChildProcess* (_ChildProcess_): Corresponding ChildProcess
     def assert_testing_scenario(oStdIN, iStdOUT, iStdERR, iChildProcess)
-      assert_equal "STDOUT Line 1.\n", iStdOUT.gets(:TimeOutSecs => 1)
+      assert_equal "STDOUT Line 1.\n", iStdOUT.gets(:time_out_secs => 1)
       assert_equal 'Enter string 1 from STDOUT: ', iStdOUT.read(28)
       assert_raise Timeout::Error do
-        iStdERR.read(1, :TimeOutSecs => 1)
+        iStdERR.read(1, :time_out_secs => 1)
       end
       assert_raise Timeout::Error do
-        iStdOUT.read(1, :TimeOutSecs => 1)
+        iStdOUT.read(1, :time_out_secs => 1)
       end
       oStdIN.write "Test String 1\n"
-      assert_equal "STDOUT Line 2: Test String 1\n", iStdOUT.gets(:TimeOutSecs => 1)
-      assert_equal "STDERR Line 1.\n", iStdERR.gets(:TimeOutSecs => 1)
+      assert_equal "STDOUT Line 2: Test String 1\n", iStdOUT.gets(:time_out_secs => 1)
+      assert_equal "STDERR Line 1.\n", iStdERR.gets(:time_out_secs => 1)
       assert_equal 'Enter string 2 from STDERR: ', iStdERR.read(28)
       assert_raise Timeout::Error do
-        iStdERR.read(1, :TimeOutSecs => 1)
+        iStdERR.read(1, :time_out_secs => 1)
       end
       assert_raise Timeout::Error do
-        iStdOUT.read(1, :TimeOutSecs => 1)
+        iStdOUT.read(1, :time_out_secs => 1)
       end
       oStdIN.write "Test String 2\n"
-      assert_equal "STDOUT Line 3: Test String 2\n", iStdOUT.gets(:TimeOutSecs => 1)
-      assert_equal "STDERR Line 2.\n", iStdERR.gets(:TimeOutSecs => 1)
-      assert_equal nil, iStdOUT.gets(:TimeOutSecs => 1)
-      assert_equal nil, iStdERR.gets(:TimeOutSecs => 1)
+      assert_equal "STDOUT Line 3: Test String 2\n", iStdOUT.gets(:time_out_secs => 1)
+      assert_equal "STDERR Line 2.\n", iStdERR.gets(:time_out_secs => 1)
+      assert_equal nil, iStdOUT.gets(:time_out_secs => 1)
+      assert_equal nil, iStdERR.gets(:time_out_secs => 1)
       assert iChildProcess.exited?
     end
 
