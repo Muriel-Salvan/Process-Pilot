@@ -5,27 +5,27 @@
 
 RubyPackager::ReleaseInfo.new.
   author(
-    :Name => 'Muriel Salvan',
-    :EMail => 'muriel@x-aeon.com',
-    :WebPageURL => 'http://murielsalvan.users.sourceforge.net'
+    :name => 'Muriel Salvan',
+    :email => 'muriel@x-aeon.com',
+    :web_page_url => 'http://murielsalvan.users.sourceforge.net'
   ).
   project(
-    :Name => 'Process Pilot',
-    :WebPageURL => 'http://processpilot.sourceforge.net/',
-    :Summary => 'Ruby library to pilot interactive command line processes in real time.',
-    :Description => 'Ruby library giving a simple way to pilot an external process\' stdin, stdout and stderr in real time. Very useful for interactive processes testing or automation.',
-    :ImageURL => 'http://processpilot.sourceforge.net/wiki/images/c/c9/Logo.png',
-    :FaviconURL => 'http://processpilot.sourceforge.net/wiki/images/2/26/Favicon.png',
-    :SVNBrowseURL => 'http://processpilot.git.sourceforge.net/',
-    :DevStatus => 'Beta'
+    :name => 'Process Pilot',
+    :web_page_url => 'http://processpilot.sourceforge.net/',
+    :summary => 'Ruby library to pilot interactive command line processes in real time.',
+    :description => 'Ruby library giving a simple way to pilot an external process\' stdin, stdout and stderr in real time. Very useful for interactive processes testing or automation.',
+    :image_url => 'http://processpilot.sourceforge.net/wiki/images/c/c9/Logo.png',
+    :favicon_url => 'http://processpilot.sourceforge.net/wiki/images/2/26/Favicon.png',
+    :browse_source_url => 'http://processpilot.git.sourceforge.net/',
+    :dev_status => 'Beta'
   ).
-  addCoreFiles( [
+  add_core_files( [
     'lib/**/*'
   ] ).
-  addTestFiles( [
+  add_test_files( [
     'test/**/*'
   ] ).
-  addAdditionalFiles( [
+  add_additional_files( [
     'README',
     'LICENSE',
     'AUTHORS',
@@ -33,19 +33,20 @@ RubyPackager::ReleaseInfo.new.
     'ChangeLog'
   ] ).
   gem(
-    :GemName => 'ProcessPilot',
-    :GemPlatformClassName => 'Gem::Platform::RUBY',
-    :RequirePath => 'lib',
-    :HasRDoc => true,
-    :TestFile => 'test/run.rb',
-    :GemDependencies => [
-      [ 'rUtilAnts', '>= 0.3' ]
+    :gem_name => 'ProcessPilot',
+    :gem_platform_class_name => 'Gem::Platform::RUBY',
+    :require_path => 'lib',
+    :has_rdoc => true,
+    :test_file => 'test/run.rb',
+    :gem_dependencies => [
+      [ 'rUtilAnts', '>= 1.0' ]
     ]
   ).
-  sourceForge(
-    :Login => 'murielsalvan',
-    :ProjectUnixName => 'processpilot'
+  source_forge(
+    :login => 'murielsalvan',
+    :project_unix_name => 'processpilot',
+    :ask_for_key_passphrase => true
   ).
-  rubyForge(
-    :ProjectUnixName => 'processpilot'
+  ruby_forge(
+    :project_unix_name => 'processpilot'
   )
