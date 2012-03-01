@@ -1,5 +1,17 @@
 = Process Pilot Release History
 
+== 2.0.0.20120301 (Beta)
+
+* Updated Release file to last version of RubyPackager (1.1.0)
+* Removed rdoc warning in documentation
+* Updated Copyright information
+* Updated email address of Muriel Salvan
+* Adapted comments to match a better RDoc syntax
+* Renamed public methods to match standard Ruby's conventions
+* Added exit_status to the waiting thread attributes
+* Added IO.read and IO.gets helpers with timeout protection mechanism
+* Bug correction: Set the correct $0 variable in Ruby programs launched with forced sync
+
 == 1.0.0.20120124 (Beta)
 
 * Removed dependency on ChildProcess: now uses Open3
