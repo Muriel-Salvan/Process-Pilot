@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    ProcessPilot (0.0.1)
+      rUtilAnts (>= 1.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    rUtilAnts (1.0.0.20120223)
+    rake (10.0.3)
+
+PLATFORMS
+  x86-mingw32
+
+DEPENDENCIES
+  ProcessPilot!
+  rake
