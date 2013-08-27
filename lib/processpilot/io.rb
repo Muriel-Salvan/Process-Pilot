@@ -1,8 +1,3 @@
-#--
-# Copyright (c) 2012 Muriel Salvan (muriel@x-aeon.com)
-# Licensed under the terms specified in LICENSE file. No warranty is provided.
-#++
-
 # Define some helpers that can be handy in case of process piloting from IO
 class IO
 
